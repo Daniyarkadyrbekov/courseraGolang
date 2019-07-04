@@ -22,7 +22,9 @@ func TestPipeline(t *testing.T) {
 	var recieved uint32
 	freeFlowJobs := []job{
 		job(func(in, out chan interface{}) {
+			fmt.Printf("start1\n")
 			out <- 1
+			fmt.Printf("start1 NOT BLOCKED\n")
 			time.Sleep(10 * time.Millisecond)
 			currRecieved := atomic.LoadUint32(&recieved)
 			// в чем тут суть
@@ -32,15 +34,22 @@ func TestPipeline(t *testing.T) {
 			if currRecieved == 0 {
 				ok = false
 			}
+			fmt.Printf("end1")
 		}),
 		job(func(in, out chan interface{}) {
+			fmt.Printf("start 2\n")
 			for _ = range in {
+				fmt.Printf("in\n")
 				atomic.AddUint32(&recieved, 1)
 			}
+			fmt.Printf("end2")
 		}),
 	}
 	ExecutePipeline(freeFlowJobs...)
+	//time.Sleep(1 * time.Microsecond)
+	//currRecieved := atomic.LoadUint32(&recieved)
 	if !ok || recieved == 0 {
+		fmt.Printf("Fail out ok, currRecieved = %v %v\n", ok, recieved)
 		t.Errorf("no value free flow - dont collect them")
 	}
 }
@@ -100,14 +109,17 @@ func TestSigner(t *testing.T) {
 		return dataHash
 	}
 
-	inputData := []int{0, 1, 1, 2, 3, 5, 8}
-	// inputData := []int{0,1}
+	//inputData := []int{0, 1, 1, 2, 3, 5, 8}
+	inputData := []int{0, 1}
 
 	hashSignJobs := []job{
 		job(func(in, out chan interface{}) {
 			for _, fibNum := range inputData {
+				fmt.Printf("inFIbNumb\n")
 				out <- fibNum
+				fmt.Printf("OutFIbNumb\n")
 			}
+			close(out)
 		}),
 		job(SingleHash),
 		job(MultiHash),
