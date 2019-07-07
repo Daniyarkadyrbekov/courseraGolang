@@ -5,48 +5,95 @@ import (
 	"fmt"
 	"sort"
 	"strconv"
-	"time"
+	"sync"
 )
-
+var mu = sync.Mutex{}
 // сюда писать код
+func getCrc32(getChan chan<- string, number string) {
+	getChan <- DataSignerCrc32(number)
+}
+
+func getMd5(getChan chan<- string, number string) {
+	mu.Lock()
+	defer mu.Unlock()
+	getChan <- DataSignerCrc32(DataSignerMd5(number))
+}
+
+func getSingleString(number string, out chan interface{}, wg *sync.WaitGroup){
+	defer wg.Done()
+	getChanCrc32 := make(chan string)
+	getChanMd5 := make(chan string)
+	go getCrc32(getChanCrc32, number)
+	go getMd5(getChanMd5, number)
+
+	crc32Result := <-getChanCrc32
+	md5Result := <-getChanMd5
+
+	out <- crc32Result + "~" + md5Result
+}
+
 func SingleHash(in, out chan interface{}) {
+	wg := &sync.WaitGroup{}
 	fmt.Printf("start single\n")
 	for input := range in {
 		fmt.Printf("inSingle\n")
 		number := input.(int)
 		stringNumber := strconv.Itoa(number)
-		 out <- DataSignerCrc32(stringNumber) + "~" + DataSignerCrc32(DataSignerMd5(stringNumber))
+
+		wg.Add(1)
+		go getSingleString(stringNumber, out, wg)
 		fmt.Printf("outSingle\n")
 	}
+	wg.Wait()
 	close(out)
 	fmt.Printf("end single\n")
 }
 
-func MultiHash(in, out chan interface{}) {
-	fmt.Printf("start Multi\n")
-	for input := range in {
-		fmt.Printf("inMulti\n")
-		inputLine := input.(string)
-		result := ""
-		threads := []string{"0", "1", "2", "3", "4", "5",}
-		for _, th := range threads{
-			buf := bytes.Buffer{}
-			buf.WriteString(th)
-			buf.WriteString(inputLine)
-			result += DataSignerCrc32(buf.String())
-		}
-		out <- result
-		fmt.Printf("outMulti\n")
+func getSignerCrc32(input string, output chan string) {
+	result := DataSignerCrc32(input)
+	output <- result
+}
+
+func multiAtomic(input interface{}, out chan<- interface{}, wg *sync.WaitGroup) {
+	defer wg.Done()
+	fmt.Printf("inMulti\n")
+	inputLine := input.(string)
+	result := ""
+	threads := []string{"0", "1", "2", "3", "4", "5"}
+	var resultChannels = []chan string {
+		make(chan string),
+		make(chan string),
+		make(chan string),
+		make(chan string),
+		make(chan string),
+		make(chan string),
 	}
+	for i, th := range threads{
+		buf := bytes.Buffer{}
+		buf.WriteString(th)
+		buf.WriteString(inputLine)
+		go getSignerCrc32(buf.String(), resultChannels[i])
+	}
+	for i := 0; i < 6; i++{
+		result += <-resultChannels[i]
+	}
+	out <- result
+	fmt.Printf("outMulti\n")
+}
+
+func MultiHash(in, out chan interface{}) {
+	wg := &sync.WaitGroup{}
+	for input := range in {
+		wg.Add(1)
+		multiAtomic(input, out, wg)
+	}
+	wg.Wait()
 	close(out)
-	fmt.Printf("end Multi\n")
 }
 
 func CombineResults(in, out chan interface{}) {
-	fmt.Printf("start Combine\n")
 	results := make([]string, 0, 8)
 	for input := range in{
-		fmt.Printf("inCombine\n")
 		line := input.(string)
 		results = append(results, line)
 	}
@@ -60,9 +107,7 @@ func CombineResults(in, out chan interface{}) {
 		}
 	}
 	out <- result
-	fmt.Printf("outCombine\n")
 	close(out)
-	fmt.Printf("end Combine\n")
 }
 
 
@@ -71,66 +116,11 @@ func ExecutePipeline(inputJobs ...job) {
 	for i := 0; i < len(inputJobs) + 1; i++{
 		channels = append(channels, make(chan interface{}, 1000))
 	}
-	fmt.Printf("channels = %v\n", channels)
 	for i, job := range inputJobs {
-		go job(channels[i], channels[i + 1])
-	}
-	time.Sleep(30 * time.Second)
-}
-
-func single(n interface{})string {
-	//crc32(data)+"~"+crc32(md5(data))
-	number, ok := n.(int)
-	if !ok {
-		fmt.Printf("can't convert to int\n")
-		return ""
-	}
-	stringNumber := strconv.Itoa(number)
-	return DataSignerCrc32(stringNumber) + "~" + DataSignerCrc32(DataSignerMd5(stringNumber))
-}
-
-func multi(n interface{}) string{
-	inputLine, ok := n.(string)
-	if !ok {
-		fmt.Printf("Can't convert to string multi input")
-	}
-	result := ""
-	threads := []string{"0", "1", "2", "3", "4", "5",}
-	for _, th := range threads{
-		buf := bytes.Buffer{}
-		buf.WriteString(th)
-		buf.WriteString(inputLine)
-		result += DataSignerCrc32(buf.String())
-	}
-	return result
-}
-
-func combine(results []string)string {
-	sort.Strings(results)
-	result := ""
-	for i, line := range results{
-		if i == 0{
-			result = line
+		if i == len(inputJobs) - 1{
+			job(channels[i], channels[i + 1])
 		}else{
-			result += "_" + line
+			go job(channels[i], channels[i + 1])
 		}
 	}
-
-	return result
-}
-
-func MyHashFunction(fibNumbers []int) string {
-	results := []string{}
-	for _, number := range fibNumbers {
-		singleLine := single(number)
-		multiLine := multi(singleLine)
-		results = append(results, multiLine)
-	}
-	result := combine(results)
-
-	return result
-}
-
-func main() {
-	fmt.Printf("hello world!\n")
 }

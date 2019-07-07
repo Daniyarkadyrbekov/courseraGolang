@@ -109,8 +109,8 @@ func TestSigner(t *testing.T) {
 		return dataHash
 	}
 
-	//inputData := []int{0, 1, 1, 2, 3, 5, 8}
-	inputData := []int{0, 1}
+	inputData := []int{0, 1, 1, 2, 3, 5, 8}
+	//inputData := []int{0}
 
 	hashSignJobs := []job{
 		job(func(in, out chan interface{}) {
