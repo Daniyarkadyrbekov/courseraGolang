@@ -115,11 +115,8 @@ func TestSigner(t *testing.T) {
 	hashSignJobs := []job{
 		job(func(in, out chan interface{}) {
 			for _, fibNum := range inputData {
-				fmt.Printf("inFIbNumb\n")
 				out <- fibNum
-				fmt.Printf("OutFIbNumb\n")
 			}
-			close(out)
 		}),
 		job(SingleHash),
 		job(MultiHash),
