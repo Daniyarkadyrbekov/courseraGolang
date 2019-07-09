@@ -22,9 +22,7 @@ func TestPipeline(t *testing.T) {
 	var recieved uint32
 	freeFlowJobs := []job{
 		job(func(in, out chan interface{}) {
-			fmt.Printf("start1\n")
 			out <- 1
-			fmt.Printf("start1 NOT BLOCKED\n")
 			time.Sleep(10 * time.Millisecond)
 			currRecieved := atomic.LoadUint32(&recieved)
 			// в чем тут суть
@@ -34,15 +32,11 @@ func TestPipeline(t *testing.T) {
 			if currRecieved == 0 {
 				ok = false
 			}
-			fmt.Printf("end1")
 		}),
 		job(func(in, out chan interface{}) {
-			fmt.Printf("start 2\n")
 			for _ = range in {
-				fmt.Printf("in\n")
 				atomic.AddUint32(&recieved, 1)
 			}
-			fmt.Printf("end2")
 		}),
 	}
 	ExecutePipeline(freeFlowJobs...)

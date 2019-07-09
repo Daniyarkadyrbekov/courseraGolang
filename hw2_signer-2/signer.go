@@ -52,18 +52,19 @@ func getSignerCrc32(input string, output chan string) {
 	output <- result
 }
 
+const threadsNumber = 6
+
 func multiAtomic(input interface{}, out chan<- interface{}, wg *sync.WaitGroup) {
 	defer wg.Done()
 	inputLine := input.(string)
 	result := ""
-	threads := []string{"0", "1", "2", "3", "4", "5"}
-	var resultChannels = []chan string{
-		make(chan string),
-		make(chan string),
-		make(chan string),
-		make(chan string),
-		make(chan string),
-		make(chan string),
+
+	threads := make([]string, threadsNumber)
+	resultChannels := make([]chan string, threadsNumber)
+
+	for i := 0; i < threadsNumber; i++{
+		threads[i] = strconv.Itoa(i)
+		resultChannels[i] = make(chan string)
 	}
 	for i, th := range threads {
 		buf := bytes.Buffer{}
