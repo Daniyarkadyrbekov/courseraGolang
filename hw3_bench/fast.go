@@ -1,10 +1,10 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"regexp"
 	"strings"
@@ -16,36 +16,28 @@ func FastSearch(out io.Writer) {
 	if err != nil {
 		panic(err)
 	}
-
-	fileContents, err := ioutil.ReadAll(file)
-	if err != nil {
-		panic(err)
-	}
+	
 
 	r := regexp.MustCompile("@")
 	seenBrowsers := []string{}
 	uniqueBrowsers := 0
 	foundUsers := ""
 
-	lines := strings.Split(string(fileContents), "\n")
+	
+	users := make([]map[string]interface{}, 0, 1050)
 
-	users := make([]map[string]interface{}, 0)
-	for _, line := range lines {
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
 		user := make(map[string]interface{})
 		// fmt.Printf("%v %v\n", err, line)
-		err := json.Unmarshal([]byte(line), &user)
+		err := json.Unmarshal([]byte(scanner.Text()), &user)
 		if err != nil {
 			panic(err)
 		}
 		users = append(users, user)
 	}
-	regAndroid, err := regexp.Compile("Android")
-	if err != nil {
-		panic(err)
-	}
 
-	regMSI, err := regexp.Compile("MSIE")
-	if err != nil {
+	if err := scanner.Err(); err != nil {
 		panic(err)
 	}
 
@@ -66,7 +58,7 @@ func FastSearch(out io.Writer) {
 				// log.Println("cant cast browser to string")
 				continue
 			}
-			if ok := regAndroid.MatchString(browser); ok {
+			if strings.Contains(browser, "Android") {
 				isAndroid = true
 				notSeenBefore := true
 				for _, item := range seenBrowsers {
@@ -88,7 +80,7 @@ func FastSearch(out io.Writer) {
 				// log.Println("cant cast browser to string")
 				continue
 			}
-			if ok := regMSI.MatchString(browser); ok {
+			if strings.Contains(browser, "MSIE") {
 				isMSIE = true
 				notSeenBefore := true
 				for _, item := range seenBrowsers {
