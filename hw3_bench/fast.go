@@ -2,12 +2,12 @@ package main
 
 import (
 	"bufio"
-	"encoding/json"
 	"fmt"
 	"io"
 	"os"
 	"regexp"
 	"strings"
+	"./easyJson"
 )
 
 // вам надо написать более быструю оптимальную этой функции
@@ -16,48 +16,39 @@ func FastSearch(out io.Writer) {
 	if err != nil {
 		panic(err)
 	}
-	
 
 	r := regexp.MustCompile("@")
 	seenBrowsers := []string{}
 	uniqueBrowsers := 0
-	foundUsers := ""
-
-	
-	users := make([]map[string]interface{}, 0, 1050)
+	//foundUsers := ""
 
 	scanner := bufio.NewScanner(file)
+	i := 0
+	firstLine := true
 	for scanner.Scan() {
-		user := make(map[string]interface{})
-		// fmt.Printf("%v %v\n", err, line)
-		err := json.Unmarshal([]byte(scanner.Text()), &user)
+		//user := make(map[string]interface{})
+		jsonStruct := easyJson.EasyJsonStruct{}
+		err := jsonStruct.UnmarshalJSON([]byte(scanner.Text()))
 		if err != nil {
 			panic(err)
 		}
-		users = append(users, user)
-	}
-
-	if err := scanner.Err(); err != nil {
-		panic(err)
-	}
-
-	for i, user := range users {
+		//fmt.Printf("jsonStruct = %v\n", jsonStruct)
 
 		isAndroid := false
 		isMSIE := false
 
-		browsers, ok := user["browsers"].([]interface{})
-		if !ok {
-			// log.Println("cant cast browsers")
-			continue
-		}
+		//browsers, ok := user["browsers"].([]interface{})
+		//if !ok {
+		//	// log.Println("cant cast browsers")
+		//	continue
+		//}
 
-		for _, browserRaw := range browsers {
-			browser, ok := browserRaw.(string)
-			if !ok {
-				// log.Println("cant cast browser to string")
-				continue
-			}
+		for _, browser := range jsonStruct.Browsers {
+			//browser, ok := browserRaw.(string)
+			//if !ok {
+			//	// log.Println("cant cast browser to string")
+			//	continue
+			//}
 			if strings.Contains(browser, "Android") {
 				isAndroid = true
 				notSeenBefore := true
@@ -74,12 +65,12 @@ func FastSearch(out io.Writer) {
 			}
 		}
 
-		for _, browserRaw := range browsers {
-			browser, ok := browserRaw.(string)
-			if !ok {
-				// log.Println("cant cast browser to string")
-				continue
-			}
+		for _, browser := range jsonStruct.Browsers {
+			//browser, ok := browserRaw.(string)
+			//if !ok {
+			//	// log.Println("cant cast browser to string")
+			//	continue
+			//}
 			if strings.Contains(browser, "MSIE") {
 				isMSIE = true
 				notSeenBefore := true
@@ -97,14 +88,24 @@ func FastSearch(out io.Writer) {
 		}
 
 		if !(isAndroid && isMSIE) {
+			i++
 			continue
 		}
 
-		// log.Println("Android and MSIE user:", user["name"], user["email"])
 		email := r.ReplaceAllString(user["email"].(string), " [at] ")
-		foundUsers += fmt.Sprintf("[%d] %s <%s>\n", i, user["name"], email)
+		if firstLine{
+			fmt.Fprintln(out, "found users:")
+			firstLine = false
+		}
+		//foundUsers := fmt.Sprintf("[%d] %s <%s>\n", i, user["name"], email)
+		fmt.Fprintln(out,fmt.Sprintf("[%d] %s <%s>", i, user["name"], email))
+		i++
 	}
 
-	fmt.Fprintln(out, "found users:\n"+foundUsers)
-	fmt.Fprintln(out, "Total unique browsers", len(seenBrowsers))
+	if err := scanner.Err(); err != nil {
+		panic(err)
+	}
+
+	//fmt.Fprintln(out, "found users:\n"+foundUsers)
+	fmt.Fprintln(out, "\nTotal unique browsers", len(seenBrowsers))
 }

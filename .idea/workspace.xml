@@ -3,10 +3,10 @@
   <component name="ChangeListManager">
     <list default="true" id="999a7414-7f75-4394-afa8-1016659a7a8e" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hw3_bench/cpu.out" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/hw3_bench/cpu.out" beforeDir="false" afterPath="$PROJECT_DIR$/hw3_bench/cpu.out" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/hw3_bench/fast.go" beforeDir="false" afterPath="$PROJECT_DIR$/hw3_bench/fast.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hw3_bench/hw3_bench.test" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/hw3_bench/mem.out" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/hw3_bench/hw3_bench.test" beforeDir="false" afterPath="$PROJECT_DIR$/hw3_bench/hw3_bench.test" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hw3_bench/mem.out" beforeDir="false" afterPath="$PROJECT_DIR$/hw3_bench/mem.out" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -28,11 +28,14 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/hw3_bench/fast.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="248">
-              <caret line="32" column="60" selection-start-line="32" selection-start-column="60" selection-end-line="32" selection-end-column="60" />
+            <state relative-caret-position="218">
+              <caret line="51" column="24" selection-start-line="51" selection-start-column="24" selection-end-line="51" selection-end-column="24" />
+              <folding>
+                <element signature="e#14#30#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -49,8 +52,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/hw3_bench/data/users.txt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="75">
-              <caret line="5" column="7" selection-start-line="5" selection-start-column="7" selection-end-line="5" selection-end-column="7" />
+            <state relative-caret-position="91">
+              <caret line="7" column="10" selection-start-line="7" selection-start-column="2" selection-end-line="7" selection-end-column="10" />
             </state>
           </provider>
         </entry>
@@ -64,11 +67,38 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/hw3_bench/main_test.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="191">
-              <caret line="43" column="18" selection-start-line="43" selection-start-column="8" selection-end-line="43" selection-end-column="18" />
+            <state relative-caret-position="292">
+              <caret line="24" column="10" selection-start-line="24" selection-start-column="10" selection-end-line="24" selection-end-column="10" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/hw3_bench/easyJson/myStruct.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state>
+              <caret selection-end-line="4" selection-end-column="1" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/hw3_bench/easyJson/myStruct_easyjson.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="182">
+              <caret line="107" column="25" selection-start-line="107" selection-start-column="25" selection-end-line="107" selection-end-column="25" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$USER_HOME$/go/src/github.com/mailru/easyjson/jlexer/lexer.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="140">
+              <caret line="40" column="5" selection-start-line="40" selection-start-column="5" selection-end-line="40" selection-end-column="5" />
             </state>
           </provider>
         </entry>
@@ -76,44 +106,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/hw3_bench/common.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="455">
-              <caret line="111" selection-start-line="111" selection-end-line="111" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/hw2_signer-2/extra_test.go">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="345">
-              <caret line="28" column="28" selection-start-line="28" selection-start-column="28" selection-end-line="28" selection-end-column="28" />
-              <folding>
-                <element signature="e#14#65#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/hw2_signer-2/main_test.go">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="480">
-              <caret line="40" column="5" selection-start-line="40" selection-start-column="5" selection-end-line="40" selection-end-column="5" />
-              <folding>
-                <element signature="e#14#104#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/hw2_signer-2/hw2.md">
-          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-            <state split_layout="FIRST">
-              <first_editor relative-caret-position="1050">
-                <caret line="70" column="19" selection-start-line="70" selection-start-column="19" selection-end-line="70" selection-end-column="51" />
-              </first_editor>
-              <second_editor />
+            <state relative-caret-position="297">
+              <caret line="105" column="75" selection-start-line="105" selection-start-column="8" selection-end-line="105" selection-end-column="75" />
             </state>
           </provider>
         </entry>
@@ -131,6 +125,7 @@
     <findStrings>
       <find>testExpected</find>
       <find>MatchString</find>
+      <find>&quot;</find>
     </findStrings>
   </component>
   <component name="GOROOT" path="/usr/local/Cellar/go/1.12.5/libexec" />
@@ -147,13 +142,18 @@
         <option value="$PROJECT_DIR$/hw2_signer-2/myHash_test.go" />
         <option value="$PROJECT_DIR$/hw2_signer-2/signer.go" />
         <option value="$PROJECT_DIR$/hw3_bench/common.go" />
+        <option value="$PROJECT_DIR$/hw3_bench/myStruct_easyjson.go" />
+        <option value="$PROJECT_DIR$/hw3_bench/easyJson/myStruct_easyjson.go" />
+        <option value="$PROJECT_DIR$/hw3_bench/data/users.txt" />
+        <option value="$PROJECT_DIR$/hw3_bench/easyJson/myStruct.go" />
         <option value="$PROJECT_DIR$/hw3_bench/fast.go" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" fullScreen="true">
+    <option name="y" value="23" />
     <option name="width" value="1680" />
-    <option name="height" value="1050" />
+    <option name="height" value="946" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
@@ -172,6 +172,29 @@
               <item name="courseraGolang" type="462c0819:PsiDirectoryNode" />
               <item name="hw3_bench" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="courseraGolang" type="b2602c69:ProjectViewProjectNode" />
+              <item name="courseraGolang" type="462c0819:PsiDirectoryNode" />
+              <item name="hw3_bench" type="462c0819:PsiDirectoryNode" />
+              <item name="data" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="courseraGolang" type="b2602c69:ProjectViewProjectNode" />
+              <item name="courseraGolang" type="462c0819:PsiDirectoryNode" />
+              <item name="hw3_bench" type="462c0819:PsiDirectoryNode" />
+              <item name="easyJson" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="courseraGolang" type="b2602c69:ProjectViewProjectNode" />
+              <item name="courseraGolang" type="462c0819:PsiDirectoryNode" />
+              <item name="hw3_bench" type="462c0819:PsiDirectoryNode" />
+              <item name="easyJson" type="462c0819:PsiDirectoryNode" />
+              <item name="myStruct.go" type="620a8d5e:NestingTreeNode" />
+            </path>
+            <path>
+              <item name="courseraGolang" type="b2602c69:ProjectViewProjectNode" />
+              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
+            </path>
           </expand>
           <select />
         </subPane>
@@ -187,6 +210,14 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/hw3_bench/easyJson" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/hw3_bench/easyJson" />
+    </key>
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -219,8 +250,9 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1680" height="1050" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.16361417" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.16361417" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -233,7 +265,7 @@
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Database Changes" order="8" />
       <window_info anchor="bottom" id="Version Control" order="9" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="10" sideWeight="0.4993895" visible="true" weight="0.6571429" />
+      <window_info anchor="bottom" id="Terminal" order="10" sideWeight="0.4993895" visible="true" weight="0.5214286" />
       <window_info anchor="bottom" id="Event Log" order="11" sideWeight="0.50061053" side_tool="true" weight="0.5867347" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -333,17 +365,27 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/hw3_bench/data/users.txt">
+    <entry file="file://$USER_HOME$/go/src/github.com/mailru/easyjson/helpers.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="5" column="7" selection-start-line="5" selection-start-column="7" selection-end-line="5" selection-end-column="7" />
+        <state relative-caret-position="45">
+          <caret line="3" column="7" lean-forward="true" selection-start-line="3" selection-start-column="7" selection-end-line="3" selection-end-column="7" />
+          <folding>
+            <element signature="e#102#230#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/hw3_bench/common.go">
+    <entry file="file://$PROJECT_DIR$/hw3_bench/main_test.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="455">
-          <caret line="111" selection-start-line="111" selection-end-line="111" />
+        <state relative-caret-position="292">
+          <caret line="24" column="10" selection-start-line="24" selection-start-column="10" selection-end-line="24" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/go/src/github.com/mailru/easyjson/jlexer/lexer.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="140">
+          <caret line="40" column="5" selection-start-line="40" selection-start-column="5" selection-end-line="40" selection-end-column="5" />
         </state>
       </provider>
     </entry>
@@ -357,17 +399,41 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/hw3_bench/fast.go">
+    <entry file="file://$PROJECT_DIR$/hw3_bench/common.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="248">
-          <caret line="32" column="60" selection-start-line="32" selection-start-column="60" selection-end-line="32" selection-end-column="60" />
+        <state relative-caret-position="297">
+          <caret line="105" column="75" selection-start-line="105" selection-start-column="8" selection-end-line="105" selection-end-column="75" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/hw3_bench/main_test.go">
+    <entry file="file://$PROJECT_DIR$/hw3_bench/easyJson/myStruct_easyjson.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="191">
-          <caret line="43" column="18" selection-start-line="43" selection-start-column="8" selection-end-line="43" selection-end-column="18" />
+        <state relative-caret-position="182">
+          <caret line="107" column="25" selection-start-line="107" selection-start-column="25" selection-end-line="107" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hw3_bench/data/users.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="91">
+          <caret line="7" column="10" selection-start-line="7" selection-start-column="2" selection-end-line="7" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hw3_bench/easyJson/myStruct.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret selection-end-line="4" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hw3_bench/fast.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="218">
+          <caret line="51" column="24" selection-start-line="51" selection-start-column="24" selection-end-line="51" selection-end-column="24" />
+          <folding>
+            <element signature="e#14#30#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
