@@ -1,54 +1,46 @@
 package main
 
 import (
+	"./easyJson"
 	"bufio"
 	"fmt"
 	"io"
 	"os"
-	"regexp"
 	"strings"
-	"./easyJson"
+	"sync"
 )
 
 // вам надо написать более быструю оптимальную этой функции
+
+var dataPool = sync.Pool{
+	New: func() interface{} {
+		return new(easyJson.EasyJsonStruct)
+	},
+}
+
 func FastSearch(out io.Writer) {
 	file, err := os.Open(filePath)
 	if err != nil {
 		panic(err)
 	}
 
-	r := regexp.MustCompile("@")
 	seenBrowsers := []string{}
 	uniqueBrowsers := 0
-	//foundUsers := ""
 
 	scanner := bufio.NewScanner(file)
 	i := 0
 	firstLine := true
 	for scanner.Scan() {
-		//user := make(map[string]interface{})
-		jsonStruct := easyJson.EasyJsonStruct{}
+		var jsonStruct  = easyJson.EasyJsonStruct{}
 		err := jsonStruct.UnmarshalJSON([]byte(scanner.Text()))
 		if err != nil {
 			panic(err)
 		}
-		//fmt.Printf("jsonStruct = %v\n", jsonStruct)
 
 		isAndroid := false
 		isMSIE := false
 
-		//browsers, ok := user["browsers"].([]interface{})
-		//if !ok {
-		//	// log.Println("cant cast browsers")
-		//	continue
-		//}
-
 		for _, browser := range jsonStruct.Browsers {
-			//browser, ok := browserRaw.(string)
-			//if !ok {
-			//	// log.Println("cant cast browser to string")
-			//	continue
-			//}
 			if strings.Contains(browser, "Android") {
 				isAndroid = true
 				notSeenBefore := true
@@ -58,7 +50,6 @@ func FastSearch(out io.Writer) {
 					}
 				}
 				if notSeenBefore {
-					// log.Printf("SLOW New browser: %s, first seen: %s", browser, user["name"])
 					seenBrowsers = append(seenBrowsers, browser)
 					uniqueBrowsers++
 				}
@@ -66,11 +57,6 @@ func FastSearch(out io.Writer) {
 		}
 
 		for _, browser := range jsonStruct.Browsers {
-			//browser, ok := browserRaw.(string)
-			//if !ok {
-			//	// log.Println("cant cast browser to string")
-			//	continue
-			//}
 			if strings.Contains(browser, "MSIE") {
 				isMSIE = true
 				notSeenBefore := true
@@ -80,7 +66,6 @@ func FastSearch(out io.Writer) {
 					}
 				}
 				if notSeenBefore {
-					// log.Printf("SLOW New browser: %s, first seen: %s", browser, user["name"])
 					seenBrowsers = append(seenBrowsers, browser)
 					uniqueBrowsers++
 				}
@@ -91,14 +76,13 @@ func FastSearch(out io.Writer) {
 			i++
 			continue
 		}
-
-		email := r.ReplaceAllString(user["email"].(string), " [at] ")
+		
+		email := strings.Replace(jsonStruct.Email, "@", " [at] ", -1)
 		if firstLine{
 			fmt.Fprintln(out, "found users:")
 			firstLine = false
 		}
-		//foundUsers := fmt.Sprintf("[%d] %s <%s>\n", i, user["name"], email)
-		fmt.Fprintln(out,fmt.Sprintf("[%d] %s <%s>", i, user["name"], email))
+		fmt.Fprintln(out,fmt.Sprintf("[%d] %s <%s>", i, jsonStruct.Name, email))
 		i++
 	}
 
@@ -106,6 +90,5 @@ func FastSearch(out io.Writer) {
 		panic(err)
 	}
 
-	//fmt.Fprintln(out, "found users:\n"+foundUsers)
 	fmt.Fprintln(out, "\nTotal unique browsers", len(seenBrowsers))
 }

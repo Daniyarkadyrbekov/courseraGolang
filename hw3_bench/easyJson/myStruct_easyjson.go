@@ -59,6 +59,10 @@ func easyjsonC0ae3f99DecodeDKadyrbekovEasyJson(in *jlexer.Lexer, out *EasyJsonSt
 				}
 				in.Delim(']')
 			}
+		case "email":
+			out.Email = string(in.String())
+		case "name":
+			out.Name = string(in.String())
 		default:
 			in.SkipRecursive()
 		}
@@ -88,6 +92,16 @@ func easyjsonC0ae3f99EncodeDKadyrbekovEasyJson(out *jwriter.Writer, in EasyJsonS
 			}
 			out.RawByte(']')
 		}
+	}
+	{
+		const prefix string = ",\"email\":"
+		out.RawString(prefix)
+		out.String(string(in.Email))
+	}
+	{
+		const prefix string = ",\"name\":"
+		out.RawString(prefix)
+		out.String(string(in.Name))
 	}
 	out.RawByte('}')
 }
