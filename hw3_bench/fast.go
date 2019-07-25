@@ -23,6 +23,7 @@ func FastSearch(out io.Writer) {
 	if err != nil {
 		panic(err)
 	}
+	defer file.Close()
 
 	seenBrowsers := []string{}
 	uniqueBrowsers := 0
@@ -32,7 +33,7 @@ func FastSearch(out io.Writer) {
 	firstLine := true
 	for scanner.Scan() {
 		var jsonStruct  = easyJson.EasyJsonStruct{}
-		err := jsonStruct.UnmarshalJSON([]byte(scanner.Text()))
+		err := jsonStruct.UnmarshalJSON(scanner.Bytes())
 		if err != nil {
 			panic(err)
 		}
