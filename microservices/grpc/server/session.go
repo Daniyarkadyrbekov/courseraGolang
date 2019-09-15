@@ -1,7 +1,7 @@
 package main
 
 import (
-	"coursera/microservices/grpc/session"
+	"github.com/coursera/courseraGolang/microservices/grpc/session"
 	"fmt"
 	"math/rand"
 	"sync"
