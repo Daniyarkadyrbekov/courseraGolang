@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -20,6 +19,36 @@ type ACLConfig struct {
 	ACLs map[string][]string `json:"-"`
 }
 
+func checkAccesToResource(ctx context.Context, ACL ACLConfig, resource string) error {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		err := status.Error(codes.Unauthenticated, "can't get metadata from context")
+		return err
+	}
+	consumers := md.Get("consumer")
+	consumerHasAccess := false
+	for _, consumer := range consumers{
+		regs, ok := ACL.ACLs[consumer]
+		if !ok {
+			err := status.Error(codes.Unauthenticated, "no consumers in context")
+			return err
+		}
+		for _, reg := range  regs{
+			ok, _ := regexp.MatchString(reg, resource)
+			if ok {
+				consumerHasAccess = true
+			}
+		}
+	}
+
+	if consumerHasAccess{
+		return nil
+	}
+	err := status.Error(codes.Unauthenticated, "consumer doesn't have access")
+	return err
+
+}
+
 type BizImplementation struct {
 	ACL ACLConfig
 }
@@ -33,34 +62,11 @@ func (b BizImplementation) Add(ctx context.Context, nothing *Nothing) (*Nothing,
 }
 
 func (b BizImplementation) Test(ctx context.Context, nothing *Nothing) (*Nothing, error) {
-	md, ok := metadata.FromIncomingContext(ctx)
-	if !ok {
-		fmt.Printf("Unauthenticated bs no metadata")
-		err := status.Error(codes.Unauthenticated, "can't get metadata from context")
+	err := checkAccesToResource(ctx, b.ACL, "/main.Biz/Test")
+	if err != nil {
 		return nil, err
 	}
-	fmt.Printf("consumerVAlues = %v \n", md.Get("consumer"))
-	consumers := md.Get("consumer")
-	consumerHasAccess := false
-	for _, consumer := range consumers{
-		regs, ok := b.ACL.ACLs[consumer]
-		if !ok {
-			err := status.Error(codes.Unauthenticated, "no consumers in context")
-			return nil, err
-		}
-		for _, reg := range  regs{
-			ok, _ := regexp.MatchString(reg, "/main.Biz/Test")
-			if ok {
-				consumerHasAccess = true
-			}
-		}
-	}
-
-	if consumerHasAccess{
-		return &Nothing{}, nil
-	}
-	err := status.Error(codes.Unauthenticated, "consumer doesn't have access")
-	return nil, err
+	return &Nothing{}, nil
 }
 
 func newBizImplementation(ACL ACLConfig) BizImplementation{
@@ -71,11 +77,16 @@ type AdminServerImplementation struct {
 	ACL ACLConfig
 }
 
-func (a AdminServerImplementation) Logging(*Nothing, Admin_LoggingServer) error {
+func (a AdminServerImplementation) Logging(nothing *Nothing, adminLogging Admin_LoggingServer) error {
+	err := checkAccesToResource(adminLogging.Context(), a.ACL, "/main.Admin/Logging")
+	if err != nil {
+		return err
+	}
+	adminLogging.Send(&Event{})
 	return nil
 }
 
-func (a AdminServerImplementation) Statistics(*StatInterval, Admin_StatisticsServer) error {
+func (a AdminServerImplementation) Statistics(interval *StatInterval, adminStatistic Admin_StatisticsServer) error {
 	return nil
 }
 

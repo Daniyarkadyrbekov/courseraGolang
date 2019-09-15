@@ -348,7 +348,6 @@ func (x *adminStatisticsClient) Recv() (*Stat, error) {
 	return m, nil
 }
 
-// AdminServer is the server API for Admin service.
 type AdminServer interface {
 	Logging(*Nothing, Admin_LoggingServer) error
 	Statistics(*StatInterval, Admin_StatisticsServer) error
