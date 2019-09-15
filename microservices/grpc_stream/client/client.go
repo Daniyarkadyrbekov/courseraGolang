@@ -10,7 +10,7 @@ import (
 
 	"google.golang.org/grpc"
 
-	"coursera/microservices/grpc_stream/translit"
+	"github.com/coursera/courseraGolang/microservices/grpc_stream/translit"
 )
 
 func main() {
