@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"google.golang.org/grpc"
 	"log"
 	"net"
@@ -9,6 +10,28 @@ import (
 
 // тут вы пишете код
 // обращаю ваше внимание - в этом задании запрещены глобальные переменные
+
+type ACLConfig struct {
+	ACLs map[string][]string `json:"-"`
+}
+
+type BizImplementation struct {}
+
+func (b BizImplementation) Check(ctx context.Context, nothing *Nothing) (*Nothing, error) {
+	return &Nothing{}, nil
+}
+
+func (b BizImplementation) Add(ctx context.Context, nothing *Nothing) (*Nothing, error) {
+	return &Nothing{}, nil
+}
+
+func (b BizImplementation) Test(ctx context.Context, nothing *Nothing) (*Nothing, error) {
+	return &Nothing{}, nil
+}
+
+func newBizImplementation() BizImplementation{
+	return BizImplementation{}
+}
 
 type AdminServerImplementation struct {
 
@@ -27,25 +50,16 @@ func newAdminServer() AdminServerImplementation{
 }
 
 func StartMyMicroservice(ctx context.Context, listenAddr string, ACLData string) error {
-	go startMicroservise(ctx, listenAddr, ACLData)
-
-	//lis, err := net.Listen("tcp", listenAddr)
-	//if err != nil {
-		//return err
-		//log.Fatalln("cant listet port", err)
-	//}
-	//defer lis.Close()
-	//
-	//server := grpc.NewServer()
-	//
-	//RegisterAdminServer(server, newAdminServer())
-	//
-	//go server.Serve(lis)
+	ACL := ACLConfig{}
+	if err := json.Unmarshal([]byte(ACLData), &ACL.ACLs); err != nil {
+		return err
+	}
+	go startMicroservise(ctx, listenAddr, ACL)
 
 	return nil
 }
 
-func startMicroservise (ctx context.Context, listenAddr string, ACLData string) {
+func startMicroservise (ctx context.Context, listenAddr string, ACL ACLConfig) {
 	lis, err := net.Listen("tcp", ":8081")
 	if err != nil {
 		log.Fatalln("cant listet port:", err)
@@ -55,6 +69,7 @@ func startMicroservise (ctx context.Context, listenAddr string, ACLData string) 
 	server := grpc.NewServer()
 
 	RegisterAdminServer(server, newAdminServer())
+	RegisterBizServer(server, newBizImplementation())
 
 	go server.Serve(lis)
 
