@@ -10,6 +10,7 @@ import (
 	"google.golang.org/grpc/status"
 	"log"
 	"net"
+	"regexp"
 )
 
 // тут вы пишете код
@@ -32,17 +33,34 @@ func (b BizImplementation) Add(ctx context.Context, nothing *Nothing) (*Nothing,
 }
 
 func (b BizImplementation) Test(ctx context.Context, nothing *Nothing) (*Nothing, error) {
-	fmt.Printf("test method is worked")
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		fmt.Printf("Unauthenticated bs no metadata")
 		err := status.Error(codes.Unauthenticated, "can't get metadata from context")
-		return nil, err //codes.Unauthenticated//errors.New("can't get metadata from context")
+		return nil, err
 	}
 	fmt.Printf("consumerVAlues = %v \n", md.Get("consumer"))
+	consumers := md.Get("consumer")
+	consumerHasAccess := false
+	for _, consumer := range consumers{
+		regs, ok := b.ACL.ACLs[consumer]
+		if !ok {
+			err := status.Error(codes.Unauthenticated, "no consumers in context")
+			return nil, err
+		}
+		for _, reg := range  regs{
+			ok, _ := regexp.MatchString(reg, "/main.Biz/Test")
+			if ok {
+				consumerHasAccess = true
+			}
+		}
+	}
 
-	//_, ok := b.ACL[ctx.Value()]
-	return &Nothing{}, nil
+	if consumerHasAccess{
+		return &Nothing{}, nil
+	}
+	err := status.Error(codes.Unauthenticated, "consumer doesn't have access")
+	return nil, err
 }
 
 func newBizImplementation(ACL ACLConfig) BizImplementation{
