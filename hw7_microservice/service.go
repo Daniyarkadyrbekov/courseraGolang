@@ -82,7 +82,9 @@ func (a AdminServerImplementation) Logging(nothing *Nothing, adminLogging Admin_
 	if err != nil {
 		return err
 	}
-	adminLogging.Send(&Event{})
+
+
+
 	return nil
 }
 
