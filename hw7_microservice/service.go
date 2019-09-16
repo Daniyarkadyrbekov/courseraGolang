@@ -10,6 +10,7 @@ import (
 	"log"
 	"net"
 	"regexp"
+	"sync"
 )
 
 // тут вы пишете код
@@ -51,13 +52,44 @@ func checkAccesToResource(ctx context.Context, ACL ACLConfig, resource string) e
 
 type BizImplementation struct {
 	ACL ACLConfig
+	eventChan chan Event
 }
 
 func (b BizImplementation) Check(ctx context.Context, nothing *Nothing) (*Nothing, error) {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		err := status.Error(codes.Unauthenticated, "can't get metadata from context")
+		return nil, err
+	}
+	consumers := md.Get("consumer")
+	consumer := consumers[0]
+	event := Event{
+		Timestamp: 0,
+		Consumer: consumer,
+		Method: "/main.Biz/Check",
+		Host: "127.0.0.1:80821",
+	}
+	b.eventChan <- event
+
 	return &Nothing{}, nil
 }
 
 func (b BizImplementation) Add(ctx context.Context, nothing *Nothing) (*Nothing, error) {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		err := status.Error(codes.Unauthenticated, "can't get metadata from context")
+		return nil, err
+	}
+	consumers := md.Get("consumer")
+	consumer := consumers[0]
+	event := Event{
+		Timestamp: 0,
+		Consumer: consumer,
+		Method: "/main.Biz/Add",
+		Host: "127.0.0.1:80821",
+	}
+	b.eventChan <- event
+
 	return &Nothing{}, nil
 }
 
@@ -66,16 +98,34 @@ func (b BizImplementation) Test(ctx context.Context, nothing *Nothing) (*Nothing
 	if err != nil {
 		return nil, err
 	}
+
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		err := status.Error(codes.Unauthenticated, "can't get metadata from context")
+		return nil, err
+	}
+	consumers := md.Get("consumer")
+	consumer := consumers[0]
+	event := Event{
+		Timestamp: 0,
+		Consumer: consumer,
+		Method: "/main.Biz/Check",
+		Host: "127.0.0.1:80821",
+	}
+	b.eventChan <- event
+
 	return &Nothing{}, nil
 }
 
-func newBizImplementation(ACL ACLConfig) BizImplementation{
-	return BizImplementation{ACL}
+func newBizImplementation(ACL ACLConfig, eventChan chan Event) BizImplementation{
+	return BizImplementation{ACL, eventChan}
 }
 
 type AdminServerImplementation struct {
+	mu *sync.Mutex
 	ACL ACLConfig
-	host string
+	eventChannel chan Event
+	logListeners []Admin_LoggingServer
 }
 
 func (a AdminServerImplementation) Logging(nothing *Nothing, adminLogging Admin_LoggingServer) error {
@@ -83,11 +133,25 @@ func (a AdminServerImplementation) Logging(nothing *Nothing, adminLogging Admin_
 	if err != nil {
 		return err
 	}
-	for i := 0; i < 10; i++ {
-		adminLogging.Send(&Event{Host:a.host})
+
+	md, ok := metadata.FromIncomingContext(adminLogging.Context())
+	if !ok {
+		err := status.Error(codes.Unauthenticated, "can't get metadata from context")
+		return err
 	}
+	consumers := md.Get("consumer")
+	consumer := consumers[0]
+	event := Event{
+		Timestamp: 0,
+		Consumer: consumer,
+		Method: "/main.Admin/Logging",
+		Host: "127.0.0.1:80822",
+	}
+	a.eventChannel <- event
 
-
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	a.logListeners = append(a.logListeners, adminLogging)
 
 	return nil
 }
@@ -96,11 +160,8 @@ func (a AdminServerImplementation) Statistics(interval *StatInterval, adminStati
 	return nil
 }
 
-func newAdminServer(ACL ACLConfig, listenAddr string) AdminServerImplementation{
-	//parts := strings.Split(listenAddr, ":")
-	//host := parts[1]
-	host := ""
-	return AdminServerImplementation{ACL, host}
+func newAdminServer(mu *sync.Mutex, ACL ACLConfig, listenAddr string, eventChan chan Event) AdminServerImplementation{
+	return AdminServerImplementation{mu, ACL, eventChan, []Admin_LoggingServer{}}
 }
 
 func StartMyMicroservice(ctx context.Context, listenAddr string, ACLData string) error {
@@ -122,9 +183,34 @@ func startMicroservise (ctx context.Context, listenAddr string, ACL ACLConfig) {
 
 	server := grpc.NewServer()
 
-	RegisterAdminServer(server, newAdminServer(ACL, listenAddr))
-	RegisterBizServer(server, newBizImplementation(ACL))
+	eventChan := make(chan Event)
+
+	mu := &sync.Mutex{}
+	adminServer := newAdminServer(mu, ACL, listenAddr, eventChan)
+	RegisterAdminServer(server, adminServer)
+
+	RegisterBizServer(server, newBizImplementation(ACL, eventChan))
 
 	go server.Serve(lis)
+	go adminServer.publishLogs(ctx, eventChan)
 	<-ctx.Done()
+}
+
+func (a AdminServerImplementation)publishLogs(ctx context.Context, eventChan chan Event) {
+	for{
+		select {
+		case <-ctx.Done():
+			return
+		case event := <- eventChan:
+			a.sendToLogListners(event)
+		}
+	}
+}
+
+func (a AdminServerImplementation)sendToLogListners(event Event) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	for _, listener := range a.logListeners{
+		listener.Send(&event)
+	}
 }
