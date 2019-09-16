@@ -75,12 +75,16 @@ func newBizImplementation(ACL ACLConfig) BizImplementation{
 
 type AdminServerImplementation struct {
 	ACL ACLConfig
+	host string
 }
 
 func (a AdminServerImplementation) Logging(nothing *Nothing, adminLogging Admin_LoggingServer) error {
 	err := checkAccesToResource(adminLogging.Context(), a.ACL, "/main.Admin/Logging")
 	if err != nil {
 		return err
+	}
+	for i := 0; i < 10; i++ {
+		adminLogging.Send(&Event{Host:a.host})
 	}
 
 
@@ -92,8 +96,11 @@ func (a AdminServerImplementation) Statistics(interval *StatInterval, adminStati
 	return nil
 }
 
-func newAdminServer(ACL ACLConfig) AdminServerImplementation{
-	return AdminServerImplementation{ACL}
+func newAdminServer(ACL ACLConfig, listenAddr string) AdminServerImplementation{
+	//parts := strings.Split(listenAddr, ":")
+	//host := parts[1]
+	host := ""
+	return AdminServerImplementation{ACL, host}
 }
 
 func StartMyMicroservice(ctx context.Context, listenAddr string, ACLData string) error {
@@ -115,7 +122,7 @@ func startMicroservise (ctx context.Context, listenAddr string, ACL ACLConfig) {
 
 	server := grpc.NewServer()
 
-	RegisterAdminServer(server, newAdminServer(ACL))
+	RegisterAdminServer(server, newAdminServer(ACL, listenAddr))
 	RegisterBizServer(server, newBizImplementation(ACL))
 
 	go server.Serve(lis)
